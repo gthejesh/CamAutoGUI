@@ -3,12 +3,21 @@ import mediapipe as mp
 import pyautogui as gui
 import numpy as np
 
+
+# Camera resolution (replace with your actual camera resolution)
+camera_width = 640
+camera_height = 480
+
+# Full screen resolution
+screen_width = 1920
+screen_height = 1080
+
 # Initialize MediaPipe Hands
 mp_hands = mp.solutions.hands
 hands = mp_hands.Hands(static_image_mode=False, max_num_hands=2, min_detection_confidence=0.5, min_tracking_confidence=0.5)
 
 # Initialize webcam
-cap = cv2.VideoCapture(0)
+cap = cv2.VideoCapture(1)
 prev_landmarks = None
 
 while cap.isOpened():
@@ -34,7 +43,10 @@ while cap.isOpened():
             centroid_y = int(centroid_y * frame.shape[0])
             # Draw centroid on frame
             cv2.circle(frame, (centroid_x, centroid_y), 5, (255, 0, 0), -1)
-            gui.moveTo(centroid_x,centroid_y)
+
+            scaled_x = int((centroid_x / camera_width) * screen_width)
+            scaled_y = int((centroid_y / camera_height) * screen_height)
+            gui.moveTo(scaled_x,scaled_y)
             
             landmarks = np.array([[lm.x, lm.y] for lm in hand_landmarks.landmark])
             
